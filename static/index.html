@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyMoney | Institutional Demand Zone Terminal</title>
+  
+  <!-- Kinetic Typography Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Plotly JS for High-Fidelity Candlestick & Volume Subplots -->
+  <script src="https://cdn.plot.ly/plotly-2.29.1.min.js"></script>
+
+  <!-- Application CSS -->
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="dark-theme">
+  
+  <!-- SVG NOISE TEXTURE OVERLAY -->
+  <svg class="noise-overlay" xmlns="http://www.w3.org/2000/svg">
+    <title>Kinetic Texture Overlay</title>
+    <filter id="noiseFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+  </svg>
+
+  <!-- Scan Progress Bar (Global Top Bar) -->
+  <div id="scanProgressBarContainer" class="scan-progress-container hidden">
+    <div id="scanProgressBar" class="scan-progress-bar" style="width: 0%;"></div>
+  </div>
+
+  <div class="app-layout">
+    
+    <!-- KINETIC INFINITE LIVE MARKET MARQUEE -->
+    <div class="kinetic-marquee-wrapper">
+      <div class="kinetic-marquee-track" id="kineticMarqueeTrack">
+        <div class="marquee-item">
+          <span class="pulse-neon"></span>
+          <span>MARKET: <strong>NSE INTRADAY 15M</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>STRATEGY: <span class="marquee-badge">BIGBELUGA ORDER BLOCKS</span></span>
+        </div>
+        <div class="marquee-item">
+          <span>ALGO: <strong>VOLUME-WEIGHTED ACCUMULATION</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>STATUS: <span class="text-accent">TERMINAL ACTIVE</span></span>
+        </div>
+        <div class="marquee-item">
+          <span>DISPLACEMENT: <strong>≥ 1.2x 14-ATR</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>CONVICTION BENCHMARK: <strong>≥ 60% BUY VOL</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>RETEST TRIGGER: <strong>ACTIVE DEMAND BOX BOUNDARY</strong></span>
+        </div>
+        <!-- Duplicate for infinite seamless scroll -->
+        <div class="marquee-item">
+          <span class="pulse-neon"></span>
+          <span>MARKET: <strong>NSE INTRADAY 15M</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>STRATEGY: <span class="marquee-badge">BIGBELUGA ORDER BLOCKS</span></span>
+        </div>
+        <div class="marquee-item">
+          <span>ALGO: <strong>VOLUME-WEIGHTED ACCUMULATION</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>STATUS: <span class="text-accent">TERMINAL ACTIVE</span></span>
+        </div>
+        <div class="marquee-item">
+          <span>DISPLACEMENT: <strong>≥ 1.2x 14-ATR</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>CONVICTION BENCHMARK: <strong>≥ 60% BUY VOL</strong></span>
+        </div>
+        <div class="marquee-item">
+          <span>RETEST TRIGGER: <strong>ACTIVE DEMAND BOX BOUNDARY</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-logo">
+          <div class="logo-icon-wrapper">
+            <i class="fa-solid fa-chart-candlestick"></i>
+            <span class="pulse-dot"></span>
+          </div>
+          <div class="brand-text">
+            <span class="brand-title">EASY<span class="brand-highlight">MONEY</span></span>
+            <span class="brand-badge">INSTITUTIONAL QUANT</span>
+          </div>
+        </div>
+
+        <div class="market-status-pill">
+          <span class="live-indicator"></span>
+          <span class="market-text">NSE 15M INTRADAY</span>
+          <span class="market-time" id="liveClock">--:--:-- IST</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <!-- Universe Selector Quick Tabs -->
+        <div class="universe-tabs" id="universeTabs">
+          <button class="univ-tab active" data-universe="Nifty 50">
+            <i class="fa-solid fa-bolt"></i> NIFTY 50
+          </button>
+          <button class="univ-tab" data-universe="Nifty 200">
+            <i class="fa-solid fa-layer-group"></i> NIFTY 200
+          </button>
+          <button class="univ-tab" data-universe="Nifty 500">
+            <i class="fa-solid fa-globe"></i> NIFTY 500
+          </button>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="algoInfoBtn" class="btn btn-ghost" title="Strategy Documentation">
+          <i class="fa-solid fa-circle-question"></i> STRATEGY LOGIC
+        </button>
+        <button id="exportCsvBtn" class="btn btn-outline" title="Export Screener Results to CSV">
+          <i class="fa-solid fa-download"></i> EXPORT CSV
+        </button>
+        <button id="startScanBtn" class="btn btn-primary">
+          <i class="fa-solid fa-radar" id="scanBtnIcon"></i>
+          <span id="scanBtnText">RUN INSTITUTIONAL SCAN</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- SCANNER PROGRESS STATUS STRIP (Active during scan) -->
+    <div id="scanStatusStrip" class="scan-status-strip hidden">
+      <div class="status-content">
+        <div class="spinner-mini"></div>
+        <span id="scanStatusMessage">Scanning constituents in parallel...</span>
+      </div>
+      <div class="status-meta">
+        <span id="scanCountRatio">0 / 50</span>
+        <span id="scanPercentBadge" class="badge-percent">0%</span>
+      </div>
+    </div>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="main-container">
+      
+      <!-- EXECUTIVE KPI METRIC CARDS (MASSIVE TYPOGRAPHY) -->
+      <section class="kpi-grid">
+        <div class="kpi-card" id="kpiUniverse" data-index="01">
+          <div class="kpi-top-row">
+            <div class="kpi-label">UNIVERSE SCANNED</div>
+            <div class="kpi-icon-box">
+              <i class="fa-solid fa-cubes"></i>
+            </div>
+          </div>
+          <div class="kpi-info">
+            <div class="kpi-value" id="kpiScannedCount">50 <span class="kpi-unit">TICKERS</span></div>
+            <div class="kpi-subtext" id="kpiUniverseLabel">NIFTY 50 • 15M TIMEFRAME</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpiZones" data-index="02">
+          <div class="kpi-top-row">
+            <div class="kpi-label">ACTIVE DEMAND ZONES</div>
+            <div class="kpi-icon-box">
+              <i class="fa-solid fa-chart-line-up"></i>
+            </div>
+          </div>
+          <div class="kpi-info">
+            <div class="kpi-value text-accent" id="kpiZonesCount">0</div>
+            <div class="kpi-subtext">BIGBELUGA BULLISH ORDER BLOCKS</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpiRetesting" data-index="03">
+          <div class="kpi-top-row">
+            <div class="kpi-label">PRIME RETEST SETUPS</div>
+            <div class="kpi-icon-box">
+              <i class="fa-solid fa-bullseye"></i>
+            </div>
+          </div>
+          <div class="kpi-info">
+            <div class="kpi-value text-emerald" id="kpiRetestCount">0</div>
+            <div class="kpi-subtext">AT ORDER BLOCK BOUNDARY</div>
+          </div>
+        </div>
+
+        <div class="kpi-card" id="kpiConviction" data-index="04">
+          <div class="kpi-top-row">
+            <div class="kpi-label">AVG BUY CONVICTION</div>
+            <div class="kpi-icon-box">
+              <i class="fa-solid fa-gauge-high"></i>
+            </div>
+          </div>
+          <div class="kpi-info">
+            <div class="kpi-value text-cyan" id="kpiAvgConviction">0.0%</div>
+            <div class="kpi-subtext">INTRA-BAR BUY VOLUME RATIO</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUANT PARAMETERS DRAWER (Expandable / Inline) -->
+      <section class="quant-controls-panel">
+        <div class="controls-header">
+          <div class="controls-title">
+            <i class="fa-solid fa-sliders"></i>
+            <span>BIGBELUGA ALGORITHMIC CONFIGURATION</span>
+          </div>
+          <button id="toggleControlsBtn" class="btn-link">
+            <span id="toggleControlsText">HIDE PARAMETERS</span>
+            <i class="fa-solid fa-chevron-up" id="toggleControlsIcon"></i>
+          </button>
+        </div>
+
+        <div class="controls-body" id="controlsBody">
+          <!-- Slider 1: Buy Conviction -->
+          <div class="control-item">
+            <div class="control-label-row">
+              <label for="sliderBuyConviction">MIN BUY VOLUME CONVICTION</label>
+              <span class="control-badge" id="valBuyConviction">60%</span>
+            </div>
+            <input type="range" id="sliderBuyConviction" min="50" max="90" step="5" value="60" class="custom-slider" />
+            <span class="control-desc">Threshold for intra-bar institutional buy accumulation ratio.</span>
+          </div>
+
+          <!-- Slider 2: ATR Multiplier -->
+          <div class="control-item">
+            <div class="control-label-row">
+              <label for="sliderAtrMult">ATR DISPLACEMENT MULTIPLIER</label>
+              <span class="control-badge" id="valAtrMult">1.2x</span>
+            </div>
+            <input type="range" id="sliderAtrMult" min="0.8" max="2.5" step="0.1" value="1.2" class="custom-slider" />
+            <span class="control-desc">Minimum upward price expansion thrust relative to 14-period ATR.</span>
+          </div>
+
+          <!-- Slider 3: Swing Pivot Length -->
+          <div class="control-item">
+            <div class="control-label-row">
+              <label for="sliderSwLen">SWING PIVOT LOOKBACK (<code>SW_LEN</code>)</label>
+              <span class="control-badge" id="valSwLen">3 BARS</span>
+            </div>
+            <input type="range" id="sliderSwLen" min="2" max="7" step="1" value="3" class="custom-slider" />
+            <span class="control-desc">Number of left/right bars confirming local swing low pivot point.</span>
+          </div>
+
+          <!-- Toggle: Retest Only -->
+          <div class="control-item toggle-item">
+            <div class="toggle-content">
+              <span class="toggle-title">ONLY SHOW PRIME RETESTS</span>
+              <span class="toggle-desc">Filter for tickers currently retesting the demand box.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggleRetestOnly" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- TWO COLUMN WORKSPACE: SCREENER MATRIX & CHART INSPECTOR -->
+      <div class="workspace-grid">
+        
+        <!-- LEFT COLUMN: SCREENER RESULTS MATRIX -->
+        <section class="screener-pane">
+          <div class="pane-header">
+            <div class="pane-title-group">
+              <h2 class="pane-title">
+                <i class="fa-solid fa-list-check text-accent"></i>
+                DEMAND ZONE SETUPS
+              </h2>
+              <span class="results-count-pill" id="resultsCountPill">0 SETUPS</span>
+            </div>
+
+            <!-- Underline-Only Search Bar -->
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="symbolSearchInput" placeholder="FILTER SYMBOL (E.G., RELIANCE)..." />
+              <button id="clearSearchBtn" class="clear-search-btn hidden">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Filter Preset Chips -->
+          <div class="filter-chips-row">
+            <button class="chip active" data-filter="all">ALL SETUPS</button>
+            <button class="chip" data-filter="retest"><i class="fa-solid fa-bullseye"></i> PRIME RETESTS</button>
+            <button class="chip" data-filter="high-conviction"><i class="fa-solid fa-fire"></i> HIGH CONVICTION (≥75%)</button>
+            <button class="chip" data-filter="high-rvol"><i class="fa-solid fa-bolt"></i> HIGH RVOL (≥1.5X)</button>
+          </div>
+
+          <!-- Screener Table Container -->
+          <div class="table-container">
+            <table class="screener-table" id="screenerTable">
+              <thead>
+                <tr>
+                  <th data-sort="symbol" class="sortable">SYMBOL <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="current_price" class="sortable">PRICE (₹) <i class="fa-solid fa-sort"></i></th>
+                  <th>DEMAND BOX RANGE</th>
+                  <th data-sort="buy_conviction" class="sortable">CONVICTION <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="rvol" class="sortable">RVOL <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="disp_atr_ratio" class="sortable">DISP / ATR <i class="fa-solid fa-sort"></i></th>
+                  <th data-sort="is_retesting" class="sortable">STATUS <i class="fa-solid fa-sort"></i></th>
+                  <th>2R TARGET</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="screenerTableBody">
+                <!-- Dynamic Rows Inserted Here -->
+                <tr>
+                  <td colspan="9" class="table-loading-row">
+                    <div class="spinner-mini" style="margin: 0 auto 12px;"></div>
+                    <span>LOADING INSTITUTIONAL SETUPS...</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-footer">
+            <span id="tableSummaryText">SHOWING ALL DETECTED SETUPS</span>
+            <span class="last-updated-text" id="lastUpdatedTime">LAST SCAN: INITIALIZING...</span>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN: INTERACTIVE CHART & SETUP INSPECTOR -->
+        <section class="inspector-pane">
+          <div class="pane-header inspector-header">
+            <div class="inspector-title-group">
+              <div class="active-symbol-badge" id="activeSymbolBadge">RELIANCE</div>
+              <div class="active-symbol-details">
+                <span class="active-price" id="activePrice">₹--.--</span>
+                <span class="active-change" id="activeChange">--%</span>
+              </div>
+            </div>
+
+            <div class="inspector-actions">
+              <!-- Quick Stock Selector Dropdown -->
+              <div class="select-wrapper">
+                <select id="stockSelectorDropdown" class="custom-select">
+                  <option value="">SELECT TICKER...</option>
+                </select>
+              </div>
+              
+              <button id="refreshTickerBtn" class="btn btn-icon" title="Refresh Live 15m Ticker Data">
+                <i class="fa-solid fa-rotate-right" id="refreshIcon"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- SETUP BREAKDOWN METRIC HUD -->
+          <div class="setup-hud-grid" id="setupHudGrid">
+            <div class="hud-item">
+              <span class="hud-label">DEMAND BOX</span>
+              <span class="hud-value text-accent" id="hudBoxRange">₹0.00 - ₹0.00</span>
+              <span class="hud-sub" id="hudBoxHeight">HEIGHT: ₹0.00 (0.0%)</span>
+            </div>
+
+            <div class="hud-item">
+              <span class="hud-label">RETEST STATUS</span>
+              <span class="hud-value" id="hudRetestStatus">--</span>
+              <span class="hud-sub" id="hudFormationTime">FORMED: --</span>
+            </div>
+
+            <div class="hud-item">
+              <span class="hud-label">BUY CONVICTION</span>
+              <span class="hud-value text-cyan" id="hudConviction">--%</span>
+              <span class="hud-sub" id="hudRvol">RVOL: --X</span>
+            </div>
+
+            <div class="hud-item">
+              <span class="hud-label">DISPLACEMENT</span>
+              <span class="hud-value" id="hudDisplacement">₹--</span>
+              <span class="hud-sub" id="hudDispAtr">--X 14-ATR</span>
+            </div>
+
+            <div class="hud-item">
+              <span class="hud-label">PROFIT TARGETS</span>
+              <span class="hud-value text-blue" id="hudTarget2r">2R: ₹--</span>
+              <span class="hud-sub text-blue-dim" id="hudTarget3r">3R: ₹--</span>
+            </div>
+          </div>
+
+          <!-- PLOTLY INTERACTIVE CHART CONTAINER -->
+          <div class="chart-wrapper">
+            <div id="plotlyChartContainer" class="plotly-chart-container">
+              <div class="chart-placeholder">
+                <div class="spinner-mini"></div>
+                <p>GENERATING 15-MINUTE CANDLESTICK CHART & ORDER BLOCK PROJECTIONS...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Legend Info -->
+          <div class="chart-legend-footer">
+            <span class="legend-item"><span class="legend-box zone-box"></span> DEMAND ZONE (ORDER BLOCK)</span>
+            <span class="legend-item"><span class="legend-box line-target"></span> 2R TARGET PROJECTION</span>
+            <span class="legend-item"><span class="legend-box line-inval"></span> INVALIDATION STOP</span>
+            <span class="legend-item"><span class="legend-box line-sma"></span> 10-PERIOD VOLUME SMA</span>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- STRATEGY DOCUMENTATION MODAL -->
+    <div id="algoModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i class="fa-solid fa-book-sparkles text-accent"></i>
+            <span>BIGBELUGA VOLUME-WEIGHTED ORDER BLOCK STRATEGY</span>
+          </div>
+          <button id="closeModalBtn" class="modal-close-btn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-intro">
+            THE <strong>BIGBELUGA QUANTITATIVE ENGINE</strong> DETECTS HIGH-PROBABILITY INSTITUTIONAL ACCUMULATION ZONES WHERE SMART MONEY ENTERED AGGRESSIVE LONG POSITIONS ON 15-MINUTE INTRADAY CHARTS.
+          </p>
+
+          <div class="algo-steps-grid">
+            <div class="step-card">
+              <div class="step-num">01</div>
+              <h4>SWING LOW PIVOT</h4>
+              <p>LOCATES LOCAL SWING LOW PIVOT WHERE PRICE IS LOWER THAN <code>SW_LEN</code> BARS TO BOTH LEFT AND RIGHT.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">02</div>
+              <h4>DISPLACEMENT CHECK</h4>
+              <p>REQUIRES EXPLOSIVE THRUST: CLOSE<sub>NEXT</sub> - LOW<sub>PIVOT</sub> ≥ MULTIPLIER × ATR(14).</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">03</div>
+              <h4>VOLUME CONVICTION</h4>
+              <p>VERIFIES AGGRESSIVE BUYING: BUY_RATIO = (CLOSE - LOW) / (HIGH - LOW) ≥ 60% WITH VOLUME ≥ SMA<sub>10</sub>.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">04</div>
+              <h4>DEMAND ZONE BOUNDS</h4>
+              <p>ZONE IS FORMED BETWEEN BOTTOM = LOW<sub>PIVOT</sub> AND TOP = MAX(OPEN<sub>PIVOT</sub>, CLOSE<sub>PIVOT</sub>).</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">05</div>
+              <h4>ACTIVE RETEST TRIGGER</h4>
+              <p>FLAGS PRIME ENTRIES WHEN PRICE PULLS BACK INSIDE THE BOUNDARY: [0.998 × BOTTOM, 1.005 × TOP].</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">06</div>
+              <h4>RISK / REWARD TARGETS</h4>
+              <p>DEFINES RISK = TOP - BOTTOM, WITH AUTOMATED TARGET 2R AND TARGET 3R PROJECTIONS ABOVE THE ZONE.</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="modalGotItBtn" class="btn btn-primary">GOT IT, THANKS</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+  </div>
+
+  <!-- Application Script -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

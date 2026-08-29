@@ -1,0 +1,1603 @@
+/* ==========================================================================
+   EASYMONEY - KINETIC TYPOGRAPHY DESIGN SYSTEM
+   High-Energy Institutional Brutalism & Quantitative Screener Terminal
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS (THE DNA)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Foundation Colors */
+  --bg-app: #09090B;               /* Rich black */
+  --bg-surface: #0E0E12;           /* Primary surface */
+  --bg-surface-elevated: #18181B;  /* Elevated surface (Zinc 900) */
+  --bg-surface-hover: #27272A;     /* Muted surface (Zinc 800) */
+  --bg-header: rgba(9, 9, 11, 0.92);
+
+  --text-primary: #FAFAFA;         /* Off-white */
+  --text-secondary: #A1A1AA;       /* Zinc 400 */
+  --text-muted: #71717A;           /* Zinc 500 */
+  --text-dim: #52525B;             /* Zinc 600 */
+
+  /* Structural Lines & Dividers */
+  --border: #3F3F46;               /* Zinc 700 */
+  --border-subtle: #27272A;        /* Zinc 800 */
+  --border-strong: #71717A;        /* Zinc 500 */
+
+  /* Accent Strategy (High-Energy Acid Yellow) */
+  --accent: #DFE104;               /* Acid Yellow / Lime */
+  --accent-fg: #000000;            /* Pure Black for Contrast */
+  --accent-dim: rgba(223, 225, 4, 0.12);
+  --accent-glow: rgba(223, 225, 4, 0.35);
+
+  /* Status Colors */
+  --color-emerald: #00E676;        /* Retest Buy / Profit */
+  --color-emerald-dim: rgba(0, 230, 118, 0.15);
+  --color-amber: #F59E0B;          /* Warning / Neutral */
+  --color-amber-dim: rgba(245, 158, 11, 0.15);
+  --color-cyan: #06B6D4;           /* Quantitative Metric */
+  --color-cyan-dim: rgba(6, 182, 212, 0.15);
+  --color-blue: #3B82F6;           /* Target Projection */
+  --color-rose: #EF4444;           /* Invalidation / Stop Loss */
+  --color-rose-dim: rgba(239, 68, 68, 0.15);
+
+  /* Typography Fonts */
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --font-sans: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Space Mono', monospace;
+
+  /* Brutalist Geometry: Sharp 0px Radius */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-pill: 0px;
+
+  /* Motion & Easing */
+  --transition-instant: 0.1s ease;
+  --transition-fast: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. BASE RESETS & NOISE OVERLAY
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: 0 !important; /* Enforce Brutalist Sharp Geometry */
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection Highlight */
+::selection {
+  background-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* Fixed SVG Noise Texture Overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+  border-left: 1px solid var(--border);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   3. UTILITIES & TYPOGRAPHY HELPERS
+   -------------------------------------------------------------------------- */
+.hidden { display: none !important; }
+
+/* Status Text Modifiers */
+.text-emerald { color: var(--color-emerald) !important; }
+.text-amber { color: var(--color-amber) !important; }
+.text-cyan { color: var(--color-cyan) !important; }
+.text-blue { color: var(--color-blue) !important; }
+.text-blue-dim { color: #93C5FD !important; }
+.text-rose { color: var(--color-rose) !important; }
+.text-accent { color: var(--accent) !important; }
+
+.uppercase { text-transform: uppercase; }
+.tracking-tighter { letter-spacing: -0.05em; }
+.tracking-tight { letter-spacing: -0.02em; }
+.tracking-wide { letter-spacing: 0.06em; }
+.tracking-widest { letter-spacing: 0.12em; }
+
+/* Top Live Scan Progress Bar */
+.scan-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(223, 225, 4, 0.1);
+  z-index: 10000;
+}
+.scan-progress-bar {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.25s ease;
+}
+
+/* --------------------------------------------------------------------------
+   4. INFINITE LIVE MARQUEE STRIP
+   -------------------------------------------------------------------------- */
+.kinetic-marquee-wrapper {
+  width: 100%;
+  background: #000000;
+  border-bottom: 2px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  z-index: 50;
+  height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.kinetic-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeLinear 32s linear infinite;
+  white-space: nowrap;
+}
+
+.kinetic-marquee-track:hover {
+  /* Kinetic style never stops marquee */
+  animation-play-state: running;
+}
+
+@keyframes marqueeLinear {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border);
+}
+
+.marquee-item strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.marquee-item .marquee-badge {
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.marquee-item .pulse-neon {
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   5. APP LAYOUT & BRUTALIST CONTAINER
+   -------------------------------------------------------------------------- */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg-app);
+}
+
+.main-container {
+  flex: 1;
+  padding: 24px 32px 48px;
+  max-width: 96vw;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   6. HEADER BAR
+   -------------------------------------------------------------------------- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-header);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid var(--border);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.logo-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  position: relative;
+  transition: transform var(--transition-fast);
+}
+.brand-logo:hover .logo-icon-wrapper {
+  transform: rotate(-4deg) scale(1.05);
+}
+
+.pulse-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  background: var(--color-emerald);
+  border: 2px solid #000000;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: var(--text-primary);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.brand-highlight {
+  color: var(--accent);
+  background: transparent;
+  padding: 0 2px;
+}
+
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.market-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  background: var(--bg-surface-elevated);
+  border: 2px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.live-indicator {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  display: inline-block;
+  animation: blinkPulse 1.2s infinite ease-in-out;
+}
+
+@keyframes blinkPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.85); }
+}
+
+.market-text {
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.market-time {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* UNIVERSE QUICK TABS */
+.header-center {
+  display: flex;
+  align-items: center;
+}
+
+.universe-tabs {
+  display: flex;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  padding: 2px;
+  gap: 2px;
+}
+
+.univ-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition: all var(--transition-instant);
+}
+
+.univ-tab:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+}
+
+.univ-tab.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 800;
+}
+
+/* HEADER ACTION BUTTONS */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   7. BUTTON SYSTEM (BRUTALIST & KINETIC)
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  padding: 10px 22px;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--text-primary);
+}
+
+/* Primary Button (Acid Yellow Accent) */
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+  font-weight: 800;
+}
+.btn-primary:hover {
+  transform: scale(1.04);
+  background: #ECEE0A;
+  border-color: #ECEE0A;
+}
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+/* Outline Button */
+.btn-outline {
+  background: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+.btn-outline:hover {
+  background: var(--text-primary);
+  color: #000000;
+  border-color: var(--text-primary);
+}
+.btn-outline:active {
+  transform: scale(0.97);
+}
+
+/* Ghost Button */
+.btn-ghost {
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  color: var(--accent);
+  border-color: var(--border);
+  background: var(--bg-surface);
+}
+
+/* Icon Button */
+.btn-icon {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+}
+.btn-icon:hover {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: color var(--transition-fast);
+}
+.btn-link:hover {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   8. SCAN STATUS STRIP
+   -------------------------------------------------------------------------- */
+.scan-status-strip {
+  background: #000000;
+  border-bottom: 2px solid var(--accent);
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.status-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.spinner-mini {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.status-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.badge-percent {
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 3px 8px;
+  font-weight: 900;
+}
+
+/* --------------------------------------------------------------------------
+   9. EXECUTIVE KPI METRICS (MASSIVE KINETIC TYPOGRAPHY)
+   -------------------------------------------------------------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  padding: 24px 28px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+  cursor: default;
+}
+
+/* Decorative Massive Watermark Number */
+.kpi-card::before {
+  content: attr(data-index);
+  position: absolute;
+  right: -10px;
+  bottom: -20px;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 9vw, 9rem);
+  font-weight: 900;
+  color: var(--border-subtle);
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0.35;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+/* HARD COLOR INVERSION ON HOVER */
+.kpi-card:hover {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.kpi-card:hover::before {
+  color: #000000;
+  opacity: 0.15;
+}
+
+.kpi-card:hover .kpi-label,
+.kpi-card:hover .kpi-value,
+.kpi-card:hover .kpi-subtext,
+.kpi-card:hover .kpi-unit {
+  color: #000000 !important;
+}
+
+.kpi-card:hover .kpi-icon-box {
+  background: #000000 !important;
+  color: var(--accent) !important;
+  border-color: #000000 !important;
+}
+
+.kpi-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.kpi-label {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.kpi-icon-box {
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--border);
+  background: var(--bg-surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.kpi-info {
+  position: relative;
+  z-index: 2;
+  margin-top: 12px;
+}
+
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.kpi-unit {
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+}
+
+.kpi-subtext {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* --------------------------------------------------------------------------
+   10. QUANT CONTROLS PANEL (BRUTALIST PARAMETER DRAWER)
+   -------------------------------------------------------------------------- */
+.quant-controls-panel {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  margin-bottom: 24px;
+}
+
+.controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 2px solid var(--border);
+  background: #000000;
+}
+
+.controls-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.controls-title i {
+  color: var(--accent);
+}
+
+.controls-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 24px;
+  background: var(--bg-surface);
+}
+
+.control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.control-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-label-row label {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.control-badge {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 6px;
+}
+
+/* Custom Brutalist Range Slider */
+.custom-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border);
+  outline: none;
+  cursor: pointer;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border: 2px solid #000000;
+  cursor: pointer;
+  transition: transform var(--transition-instant);
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.custom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border: 2px solid #000000;
+  cursor: pointer;
+}
+
+.control-desc {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* Toggle Item */
+.toggle-item {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-surface-elevated);
+  border: 2px solid var(--border);
+}
+
+.toggle-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.toggle-title {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.toggle-desc {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* Brutalist Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider.round {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border);
+  transition: .2s;
+}
+
+.slider.round:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-secondary);
+  transition: .2s;
+}
+
+input:checked + .slider.round {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+input:checked + .slider.round:before {
+  transform: translateX(20px);
+  background-color: #000000;
+}
+
+/* --------------------------------------------------------------------------
+   11. TWO COLUMN WORKSPACE GRID
+   -------------------------------------------------------------------------- */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* --------------------------------------------------------------------------
+   12. SCREENER PANE & DATA GRID (LEFT COLUMN)
+   -------------------------------------------------------------------------- */
+.screener-pane {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--border);
+  background: #000000;
+  gap: 16px;
+}
+
+.pane-title-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pane-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.results-count-pill {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
+/* Underline-Only Brutalist Search Box */
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 260px;
+}
+
+.search-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  padding: 8px 30px 8px 26px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.search-box input:focus {
+  border-bottom-color: var(--accent);
+}
+
+.search-box input::placeholder {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 4px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* Quick Filter Preset Chips */
+.filter-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg-surface);
+  overflow-x: auto;
+}
+
+.chip {
+  background: transparent;
+  border: 2px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-instant);
+}
+
+.chip:hover {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.chip.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+  font-weight: 800;
+}
+
+/* Screener Table */
+.table-container {
+  overflow-x: auto;
+  max-height: 520px;
+  min-height: 380px;
+}
+
+.screener-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+.screener-table th {
+  background: #000000;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 12px 16px;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.screener-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.screener-table th.sortable:hover {
+  color: var(--accent);
+}
+
+.screener-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background var(--transition-instant), color var(--transition-instant);
+}
+
+/* HARD COLOR INVERSION ON TABLE ROW HOVER */
+.screener-table tbody tr {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.screener-table tbody tr:hover td {
+  background: var(--accent) !important;
+  color: #000000 !important;
+}
+
+.screener-table tbody tr:hover .stock-symbol-badge,
+.screener-table tbody tr:hover .retest-badge,
+.screener-table tbody tr:hover .btn-inspect {
+  background: #000000 !important;
+  color: var(--accent) !important;
+  border-color: #000000 !important;
+}
+
+.screener-table tbody tr.active-row td {
+  background: var(--bg-surface-elevated);
+  border-left: 4px solid var(--accent);
+}
+
+/* Table Cell Badges */
+.stock-symbol-badge {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  display: inline-block;
+}
+
+.retest-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.retest-badge.pending {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+.btn-inspect {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.table-loading-row td {
+  text-align: center;
+  padding: 48px;
+}
+
+.table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-top: 2px solid var(--border);
+  background: #000000;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   13. INSPECTOR PANE & SETUP HUD (RIGHT COLUMN)
+   -------------------------------------------------------------------------- */
+.inspector-pane {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.inspector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--border);
+  background: #000000;
+}
+
+.inspector-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.active-symbol-badge {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 4px 14px;
+  text-transform: uppercase;
+  border: 2px solid var(--accent);
+}
+
+.active-symbol-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.active-price {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.active-change {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-emerald);
+}
+
+.inspector-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.custom-select {
+  background: var(--bg-surface-elevated);
+  border: 2px solid var(--border);
+  color: var(--text-primary);
+  padding: 8px 14px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  outline: none;
+  cursor: pointer;
+}
+
+.custom-select:focus {
+  border-color: var(--accent);
+}
+
+/* SETUP HUD GRID */
+.setup-hud-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  background: var(--border);
+  border-bottom: 2px solid var(--border);
+}
+
+.hud-item {
+  background: var(--bg-surface);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: background var(--transition-fast);
+}
+
+.hud-item:hover {
+  background: var(--accent);
+}
+
+.hud-item:hover .hud-label,
+.hud-item:hover .hud-value,
+.hud-item:hover .hud-sub {
+  color: #000000 !important;
+}
+
+.hud-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.hud-value {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.hud-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* PLOTLY CHART CONTAINER */
+.chart-wrapper {
+  background: #09090B;
+  min-height: 380px;
+  padding: 8px;
+  position: relative;
+}
+
+.plotly-chart-container {
+  width: 100%;
+  height: 380px;
+}
+
+.chart-placeholder {
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.chart-legend-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 16px;
+  background: #000000;
+  border-top: 2px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-box {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+}
+
+.legend-box.zone-box { background: var(--accent); }
+.legend-box.line-target { background: #FAFAFA; }
+.legend-box.line-inval { background: var(--color-rose); }
+.legend-box.line-sma { background: var(--color-cyan); }
+
+/* --------------------------------------------------------------------------
+   14. STRATEGY MODAL & BRUTALIST STEPS
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(9, 9, 11, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-card {
+  background: #000000;
+  border: 2px solid var(--accent);
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  border-bottom: 2px solid var(--border);
+  background: #09090B;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.modal-title i {
+  color: var(--accent);
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.modal-close-btn:hover {
+  color: var(--accent);
+}
+
+.modal-body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-intro {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.algo-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.step-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--border);
+  padding: 18px;
+  position: relative;
+  transition: background var(--transition-fast);
+}
+
+.step-card:hover {
+  background: var(--accent);
+}
+
+.step-card:hover .step-num,
+.step-card:hover h4,
+.step-card:hover p,
+.step-card:hover code {
+  color: #000000 !important;
+}
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -0.05em;
+}
+
+.step-card h4 {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.step-card p {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.step-card code {
+  font-family: var(--font-mono);
+  background: #000000;
+  padding: 1px 4px;
+  color: var(--accent);
+  font-size: 0.72rem;
+}
+
+.modal-footer {
+  padding: 18px 28px;
+  border-top: 2px solid var(--border);
+  background: #09090B;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* --------------------------------------------------------------------------
+   15. TOAST NOTIFICATIONS (BRUTALIST TOASTS)
+   -------------------------------------------------------------------------- */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #000000;
+  border: 2px solid var(--border);
+  border-left: 6px solid var(--accent);
+  padding: 14px 20px;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  box-shadow: none;
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast.toast-success { border-left-color: var(--accent); }
+.toast.toast-error { border-left-color: var(--color-rose); }
+.toast.toast-warning { border-left-color: var(--color-amber); }
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   16. RESPONSIVE BREAKPOINTS & REDUCED MOTION
+   -------------------------------------------------------------------------- */
+@media (max-width: 1280px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .controls-body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .algo-steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 16px;
+  }
+  .header-left, .header-center, .header-right {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .controls-body {
+    grid-template-columns: 1fr;
+  }
+  .setup-hud-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .algo-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Motion Preferences Support */
+@media (prefers-reduced-motion: reduce) {
+  .kinetic-marquee-track {
+    animation: none !important;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

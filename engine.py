@@ -401,3 +401,73 @@ def run_full_screener(
         summary_df.reset_index(drop=True, inplace=True)
 
     return summary_df, processed_dfs, symbol_zones
+
+
+def serialize_zones(zones: List[dict]) -> List[dict]:
+    """
+    Ensures all zone dictionaries are strictly JSON serializable.
+    """
+    clean = []
+    for z in zones:
+        cz = dict(z)
+        if isinstance(cz.get("pivot_time"), (pd.Timestamp, datetime.datetime)):
+            cz["pivot_time_iso"] = cz["pivot_time"].isoformat()
+            cz["pivot_time_str"] = cz["pivot_time"].strftime("%d %b %H:%M")
+            cz["pivot_timestamp"] = int(cz["pivot_time"].timestamp())
+            cz["pivot_time"] = cz["pivot_time"].strftime("%Y-%m-%d %H:%M:%S")
+        clean.append(cz)
+    return clean
+
+
+def format_ticker_chart_payload(symbol: str, df: pd.DataFrame, zones: List[dict]) -> dict:
+    """
+    Transforms DataFrame and zones into a lightweight, high-performance
+    JSON payload for modern frontend charting (TradingView Lightweight Charts / Plotly).
+    """
+    if df is None or df.empty:
+        return {"symbol": symbol, "candles": [], "zones": [], "latest_stats": None}
+
+    candles = []
+    for idx, row in df.iterrows():
+        ts = int(idx.timestamp()) if isinstance(idx, (pd.Timestamp, datetime.datetime)) else 0
+        time_str = idx.strftime("%Y-%m-%d %H:%M") if isinstance(idx, (pd.Timestamp, datetime.datetime)) else str(idx)
+        
+        vol_sma_val = None
+        if "Vol_SMA" in row and not pd.isna(row["Vol_SMA"]):
+            vol_sma_val = round(float(row["Vol_SMA"]), 2)
+            
+        buy_pct_val = None
+        if "Buy_Pct" in row and not pd.isna(row["Buy_Pct"]):
+            buy_pct_val = round(float(row["Buy_Pct"]) * 100, 1)
+
+        candles.append({
+            "time": ts,
+            "time_str": time_str,
+            "open": round(float(row["Open"]), 2),
+            "high": round(float(row["High"]), 2),
+            "low": round(float(row["Low"]), 2),
+            "close": round(float(row["Close"]), 2),
+            "volume": int(row["Volume"]) if not pd.isna(row["Volume"]) else 0,
+            "vol_sma": vol_sma_val,
+            "buy_pct": buy_pct_val
+        })
+
+    serialized_zones = serialize_zones(zones)
+    latest_stats = serialized_zones[-1] if serialized_zones else None
+
+    curr_price = round(float(df["Close"].iloc[-1]), 2)
+    change_prev = round(float(df["Close"].iloc[-1] - df["Close"].iloc[0]), 2)
+    change_pct = round((change_prev / max(0.01, float(df["Close"].iloc[0]))) * 100, 2)
+
+    return {
+        "symbol": symbol.replace(".NS", ""),
+        "full_symbol": symbol,
+        "current_price": curr_price,
+        "change_abs": change_prev,
+        "change_pct": change_pct,
+        "candles": candles,
+        "zones": serialized_zones,
+        "latest_stats": latest_stats,
+        "total_candles": len(candles)
+    }
+
