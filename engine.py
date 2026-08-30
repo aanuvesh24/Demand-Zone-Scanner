@@ -271,18 +271,17 @@ def calculate_bigbeluga_order_blocks(
             displacement = max_disp_close - low_i
             has_displacement = displacement >= (atr_mult * atr_i)
 
-            # Volume conviction on pivot or breakout candle
-            pivot_buy_pct = df["Buy_Pct"].iloc[i]
-            next_buy_pct = df["Buy_Pct"].iloc[i + 1] if i + 1 < n else 0.0
-            best_buy_pct = max(pivot_buy_pct, next_buy_pct)
-
+            # Calculate BigBeluga Volume Strength (Percentage of recent volume)
+            # Volume Strength = (Pivot Volume / Sum of Volume over past 10 bars) * 100
             pivot_vol = df["Volume"].iloc[i]
-            pivot_vol_sma = df["Vol_SMA"].iloc[i]
-            next_vol = df["Volume"].iloc[i + 1] if i + 1 < n else 0.0
-            next_vol_sma = df["Vol_SMA"].iloc[i + 1] if i + 1 < n else 1.0
+            sum_vol_10 = df["Volume"].iloc[max(0, i-9):i+1].sum()
+            volume_strength = (pivot_vol / sum_vol_10) * 100 if sum_vol_10 > 0 else 0
 
-            vol_confirmed = (pivot_vol >= pivot_vol_sma) or (next_vol >= next_vol_sma)
-            conviction_ok = (best_buy_pct >= buy_pct_thresh) and vol_confirmed
+            pivot_vol_sma = df["Vol_SMA"].iloc[i]
+            
+            # BigBeluga checks if pivot volume >= SMA and volume strength >= threshold
+            vol_confirmed = (pivot_vol >= pivot_vol_sma)
+            conviction_ok = (volume_strength >= buy_pct_thresh * 100) and vol_confirmed
 
             if has_displacement and conviction_ok:
                 bottom = float(low_i)
@@ -312,7 +311,7 @@ def calculate_bigbeluga_order_blocks(
                         "atr": round(atr_i, 2),
                         "displacement": round(displacement, 2),
                         "disp_atr_ratio": round(displacement / atr_i, 2),
-                        "buy_pct": round(best_buy_pct * 100, 1),
+                        "buy_pct": round(volume_strength, 1),
                         "rvol": round(float(df["RVOL"].iloc[i]), 2),
                         "current_price": round(current_price, 2),
                         "is_retesting": is_retesting,
